@@ -1,0 +1,31 @@
+{
+  "name": "confidential",
+  "version": "1.0.0",
+  "description": "Sapphire Confidential transaction",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "deploy": "truffle migrate --network sapphire_testnet",
+    "start": "truffle exec --network sapphire_testnet scripts/confidential.contract.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/jrastit/sapphire-confidential.git"
+  },
+  "author": "Jerome Rastit",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/jrastit/sapphire-confidential/issues"
+  },
+  "homepage": "https://github.com/jrastit/sapphire-confidential#readme",
+  "devDependencies": {
+    "@oasisprotocol/sapphire-paratime": "^1.1.1",
+    "@openzeppelin/contracts": "^4.9.3",
+    "@truffle/hdwallet-provider": "^2.1.15"
+  },
+  "dependencies": {
+    "@oasisprotocol/sapphire-contracts": "^0.2.4"
+  }
+}

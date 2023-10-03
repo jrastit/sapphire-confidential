@@ -7,7 +7,7 @@ const sapphire = require('@oasisprotocol/sapphire-paratime');
 const Confidential = artifacts.require("Confidential");
 const Confidential2 = artifacts.require("Confidential");
 
-const amount = web3.utils.toWei("0.01");
+const amount = web3.utils.toWei("1");
 
 function tx_info(msg, tx) {
   if (!tx) {
@@ -57,6 +57,8 @@ async function check_balance(confidential) {
   gas_price = await web3.eth.getGasPrice();
   console.log("Gas price: ", gas_price);
   console.log("Gas fee: ", web3.utils.fromWei(new BN(estimate_gas).mul(new BN(gas_price))));
+  address = await confidential.get_last_address({from:owner});
+  console.log("Last address: ", address);
   address_len0 = await confidential.get_address_length({from:owner});
   console.log("Address length: ", address_len0.toNumber());
   tx = await confidential.add_address({from:owner})
@@ -111,6 +113,8 @@ async function check_balance(confidential) {
       retrun;
     }
   } while (owner_balance.eq(owner_balance0));
+  address = await confidential.get_last_address({from:owner});
+  console.log("Last address: ", address);
 }
 
 async function withdraw(confidential) {
@@ -167,7 +171,7 @@ async function process_transaction(confidential) {
     await web3.eth.getGasPrice(),
   );
   console.log("Withdraw transaction:", transaction);
-
+  
   provider = new HDWalletProvider(
       process.env.PRIVATE_KEY, 
       "https://testnet.sapphire.oasis.dev",
@@ -203,12 +207,15 @@ async function exerciseContract() {
   Confidential.setProvider(provider);
   
   const confidential = await Confidential.deployed();
-  
+
   await check_balance(confidential);
-  
+
   await withdraw(confidential);
   
   await process_transaction(confidential);
+
+  web3.setProvider(provider2);
+  await withdraw(confidential2);
 }
 
 module.exports = async function (callback) {

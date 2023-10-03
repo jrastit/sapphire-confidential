@@ -54,8 +54,17 @@ contract Confidential {
         addressProviderList.push(pubkeyAddr);
     }
 
-    function get_last_address() public view returns(address pubkeyAddr) {
-        return ownerMap[msg.sender].addressList[ownerMap[msg.sender].addressList.length - 1];
+    function get_last_address() public view returns(address) {
+        if (ownerMap[msg.sender].addressList.length == 0) {
+            return address(0);
+        }
+        for (uint256 i = 0; i < ownerMap[msg.sender].addressList.length; i++) {
+            address addr = ownerMap[msg.sender].addressList[i];
+            if (addressMap[addr].balance == 0) {
+                return addr;
+            } 
+        }
+        return address(0);
     }
 
     function get_address_length() public view returns (uint256){
@@ -93,13 +102,17 @@ contract Confidential {
         if (amount == 0) {
             return;
         }
+        uint j = 0;
         for (uint256 i = 0; i < addressProviderList.length; i++) {
-            address addr = addressProviderList[i];
-            if (addressMap[addr].owner != msg.sender ) {
+            address addr = addressProviderList[i - j];
+            if (addressMap[addr].owner != msg.sender && addressMap[addr].balance > 0) {
                 uint256 amount2 = amount;
-                if ((addressMap[addr].balance - addressMap[addr].withdraw) < amount) {
+                if ((addressMap[addr].balance - addressMap[addr].withdraw) <= amount) {
                     amount2 = addressMap[addr].balance - addressMap[addr].withdraw;
+                    addressProviderList[i - j] = addressProviderList[addressProviderList.length - 1];
+                    j++;
                 }
+                require(amount2 > 0, 'amount is null');
                 addressMap[addr].withdraw = addressMap[addr].withdraw + amount2;
                 ownerMap[msg.sender].balance -= amount2;
                 ownerMap[msg.sender].balance_to_withdraw += amount2;
@@ -110,6 +123,9 @@ contract Confidential {
                     break;
                 }
             }
+        }
+        for(;j > 0; j--){
+            addressProviderList.pop();
         }
     }
 

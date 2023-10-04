@@ -32,6 +32,13 @@ cd front
 #Install dependencies
 npm i
 
+#install the contract
+cd src
+mkdir contracts
+cd contracts
+ln -s ../../../confidential/build/contracts/Confidential.json
+cd ../..
+
 #Launch the app
 npm start
 ```

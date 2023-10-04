@@ -16,7 +16,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "pm2": "pm2 start ecosystem.config.cjs"
   },
   "eslintConfig": {
     "extends": "react-app"

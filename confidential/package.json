@@ -7,8 +7,8 @@
     "test": "test"
   },
   "scripts": {
-    "deploy": ". .env && truffle migrate --network sapphire_testnet",
-    "start": ". .env && truffle exec --network sapphire_testnet scripts/confidential.contract.js"
+    "deploy": ". ./.env && truffle migrate --network sapphire_testnet",
+    "start": ". ./.env && truffle exec --network sapphire_testnet scripts/confidential.contract.js"
   },
   "repository": {
     "type": "git",

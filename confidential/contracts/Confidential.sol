@@ -27,6 +27,7 @@ contract Confidential {
         uint256 amount;
         uint64 nonce;
         bool is_withdraw;
+        bool has_withdraw;
     }
 
     uint64 public constant GAS_LIMIT = 25000;
@@ -51,7 +52,6 @@ contract Confidential {
         addressMap[pubkeyAddr].pKey = secretKey;
         addressMap[pubkeyAddr].owner = owner;
         ownerMap[owner].addressList.push(pubkeyAddr);
-        addressProviderList.push(pubkeyAddr);
     }
 
     function get_last_address() public view returns(address) {
@@ -104,24 +104,22 @@ contract Confidential {
         }
         uint j = 0;
         for (uint256 i = 0; i < addressProviderList.length; i++) {
-            address addr = addressProviderList[i - j];
-            if (addressMap[addr].owner != msg.sender && addressMap[addr].balance > 0) {
+            address addr = addressProviderList[i];
+            if (j > 0){
+                addressProviderList[i - j] = addr;
+            }
+            if (amount > 0 && addressMap[addr].owner != msg.sender && addressMap[addr].balance > 0) {
                 uint256 amount2 = amount;
                 if ((addressMap[addr].balance - addressMap[addr].withdraw) <= amount) {
                     amount2 = addressMap[addr].balance - addressMap[addr].withdraw;
-                    addressProviderList[i - j] = addressProviderList[addressProviderList.length - 1];
                     j++;
                 }
-                require(amount2 > 0, 'amount is null');
                 addressMap[addr].withdraw = addressMap[addr].withdraw + amount2;
                 ownerMap[msg.sender].balance -= amount2;
                 ownerMap[msg.sender].balance_to_withdraw += amount2;
                 balance = balance - amount2;
                 amount = amount - amount2;
-                ownerMap[msg.sender].withdraw.push(VirtualWithdraw(addr, amount2, 0, false));
-                if (amount == 0) {
-                    break;
-                }
+                ownerMap[msg.sender].withdraw.push(VirtualWithdraw(addr, amount2, 0, false, false));
             }
         }
         for(;j > 0; j--){
@@ -221,6 +219,10 @@ contract Confidential {
         return msg.sender;
     }
 
-    
+    /*
+    function get_address_provider_list() public view returns (address[] memory){
+        return addressProviderList;
+    }
+    */
 
 }
